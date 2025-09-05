@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新規プロンプト作成 - システムプロンプト管理</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- ヘッダー -->
+        <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-4">
+            <div class="container">
+                <a class="navbar-brand" href="/">
+                    <i class="fas fa-cogs me-2"></i>システムプロンプト管理
+                </a>
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link" href="/">
+                        <i class="fas fa-list me-1"></i>一覧に戻る
+                    </a>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="mb-4"><i class="fas fa-plus me-2"></i>新規プロンプト作成</h2>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="post" action="/create">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="prompt_key" class="form-label">
+                                                プロンプトキー <span class="text-danger">*</span>
+                                            </label>
+                                            <input type="text" class="form-control" id="prompt_key" name="prompt_key" 
+                                                   required placeholder="例: strategy_planning">
+                                            <div class="form-text">
+                                                英数字とアンダースコアのみ使用可能。一意である必要があります。
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="description" class="form-label">説明</label>
+                                            <input type="text" class="form-control" id="description" name="description" 
+                                                   placeholder="プロンプトの説明">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="category" class="form-label">カテゴリ</label>
+                                            <select class="form-select" id="category" name="category">
+                                                <option value="general">general</option>
+                                                <option value="strategy">strategy</option>
+                                                <option value="integration">integration</option>
+                                                <option value="chat">chat</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label for="prompt_text" class="form-label">
+                                        システムプロンプト <span class="text-danger">*</span>
+                                    </label>
+                                    <textarea class="form-control" id="prompt_text" name="prompt_text" 
+                                              rows="15" required placeholder="システムプロンプトを入力してください..."></textarea>
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        AIシステムに送信されるシステムプロンプトを入力してください。
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <a href="/" class="btn btn-secondary">
+                                        <i class="fas fa-arrow-left me-1"></i>キャンセル
+                                    </a>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-plus me-1"></i>作成
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- プレビューエリア -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-eye me-2"></i>プレビュー</h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="bg-light p-3 rounded">
+                                <pre id="preview" class="mb-0 text-muted">プロンプトを入力するとここにプレビューが表示されます</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // プレビュー更新
+        function updatePreview() {
+            const text = document.getElementById('prompt_text').value;
+            const preview = document.getElementById('preview');
+            
+            if (text.trim()) {
+                preview.textContent = text;
+                preview.className = 'mb-0';
+            } else {
+                preview.textContent = 'プロンプトを入力するとここにプレビューが表示されます';
+                preview.className = 'mb-0 text-muted';
+            }
+        }
+
+        // テキストエリア変更時にプレビュー更新
+        document.getElementById('prompt_text').addEventListener('input', updatePreview);
+
+        // プロンプトキーの入力制限
+        document.getElementById('prompt_key').addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/[^a-zA-Z0-9_]/g, '');
+        });
+    </script>
+
+    <footer class="mt-5 text-center text-muted">
+        <small>SystemPrompt Management v1.0.0</small>
+    </footer>
+</body>
+</html>
