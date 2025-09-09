@@ -22,6 +22,53 @@ def get_db_connection():
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Database connection failed: {e}")
 
+def init_database():
+    """データベース初期化"""
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        
+        # テーブル作成
+        cursor.execute("""
+            CREATE TABLE IF NOT EXISTS system_prompts (
+                id SERIAL PRIMARY KEY,
+                prompt_key VARCHAR(100) UNIQUE NOT NULL,
+                description VARCHAR(500),
+                prompt_text TEXT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """)
+        
+        # 初期データ投入
+        cursor.execute("SELECT COUNT(*) FROM system_prompts")
+        count = cursor.fetchone()[0]
+        
+        if count == 0:
+            initial_data = [
+                ('strategy_planning', '戦略立案用システムプロンプト', 'あなたは戦略立案の専門家です。ユーザーリクエストを分析し、必要最小限のツールのみを選択してください。'),
+                ('integration_response', '回答統合用システムプロンプト', '証券会社の社内情報システムとして回答してください。'),
+                ('simple_chat', 'シンプルチャット用システムプロンプト', 'あなたは親切な金融商品アドバイザーです。ユーザーの質問に対して、親しみやすく分かりやすい回答をしてください。')
+            ]
+            
+            for key, desc, text in initial_data:
+                cursor.execute(
+                    "INSERT INTO system_prompts (prompt_key, description, prompt_text) VALUES (%s, %s, %s) ON CONFLICT (prompt_key) DO NOTHING",
+                    (key, desc, text)
+                )
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+    except Exception as e:
+        print(f"Database initialization error: {e}")
+
+@app.on_event("startup")
+async def startup_event():
+    """アプリケーション起動時の初期化"""
+    init_database()
+
 @app.get("/", response_class=HTMLResponse)
 async def index():
     try:
@@ -32,10 +79,7 @@ async def index():
         cursor.close()
         connection.close()
         
-        prompt_count = len(prompts)
-        
-        # HTMLテンプレートを安全に作成
-        html_header = """<!DOCTYPE html>
+        html = f"""<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
@@ -65,34 +109,29 @@ async def index():
                             <th>操作</th>
                         </tr>
                     </thead>
-                    <tbody>"""
+                    <tbody>"""        
         
-        # テーブル行を作成
-        table_rows = ""
         for prompt in prompts:
             preview = prompt['prompt_text'][:100] + '...' if len(prompt['prompt_text']) > 100 else prompt['prompt_text']
-            escaped_desc = (prompt['description'] or '').replace("'", "\\'")
-            escaped_text = prompt['prompt_text'].replace("'", "\\'")
-            
-            table_rows += f"""                        <tr>
+            html += f"""                        <tr>
                             <td><code>{prompt['prompt_key']}</code></td>
                             <td>{prompt['description'] or '-'}</td>
                             <td><small class="text-muted">{preview}</small></td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editPrompt({prompt['id']}, '{prompt['prompt_key']}', '{escaped_desc}', '{escaped_text}')" title="編集"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editPrompt({prompt['id']}, '{prompt['prompt_key']}', '{prompt['description'] or ''}', `{prompt['prompt_text'].replace('`', '\\`')}`)" title="編集"><i class="fas fa-edit"></i></button>
                                 <button class="btn btn-sm btn-outline-danger" onclick="deletePrompt({prompt['id']}, '{prompt['prompt_key']}')" title="削除"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
 """
         
-        html_footer = f"""                    </tbody>
+        html += """                    </tbody>
                 </table>
             </div>
         </div>
         
         <div class="alert alert-success mt-4">
             <i class="fas fa-database me-2"></i>
-            PostgreSQL (wealthai database) に接続中 - {prompt_count}件のプロンプトを管理
+            PostgreSQL (wealthai database) に接続中 - {len(prompts)}件のプロンプトを管理
         </div>
     </div>
 
@@ -186,9 +225,9 @@ async def index():
         <small>SystemPrompt Management v1.0.0 - PostgreSQL版</small>
     </footer>
 </body>
-</html>"""
+</html>""".replace('{len(prompts)}', str(len(prompts)))
         
-        return html_header + table_rows + html_footer
+        return html
         
     except Exception as e:
         return f"<h1>Database Error</h1><p>{str(e)}</p>"
