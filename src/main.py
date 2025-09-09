@@ -4,6 +4,7 @@ import psycopg2
 from psycopg2.extras import RealDictCursor
 import uvicorn
 from datetime import datetime
+import html
 
 app = FastAPI(title="SystemPrompt Management", version="1.0.0")
 
@@ -71,15 +72,19 @@ async def index():
         table_rows = ""
         for prompt in prompts:
             preview = prompt['prompt_text'][:100] + '...' if len(prompt['prompt_text']) > 100 else prompt['prompt_text']
-            escaped_desc = (prompt['description'] or '').replace("'", "\\'")
-            escaped_text = prompt['prompt_text'].replace("'", "\\'")
             
             table_rows += f"""                        <tr>
                             <td><code>{prompt['prompt_key']}</code></td>
                             <td>{prompt['description'] or '-'}</td>
                             <td><small class="text-muted">{preview}</small></td>
                             <td>
-                                <button class="btn btn-sm btn-outline-primary me-1" onclick="editPrompt({prompt['id']}, '{prompt['prompt_key']}', '{escaped_desc}', '{escaped_text}')" title="編集"><i class="fas fa-edit"></i></button>
+                                <button class="btn btn-sm btn-outline-primary me-1" 
+                                        data-id="{prompt['id']}" 
+                                        data-key="{prompt['prompt_key']}"
+                                        data-desc="{html.escape(prompt['description'] or '')}"
+                                        data-prompt="{html.escape(prompt['prompt_text'])}"
+                                        onclick="editFromData(this)" 
+                                        title="編集"><i class="fas fa-edit"></i></button>
                                 <button class="btn btn-sm btn-outline-danger" onclick="deletePrompt({prompt['id']}, '{prompt['prompt_key']}')" title="削除"><i class="fas fa-trash"></i></button>
                             </td>
                         </tr>
@@ -166,7 +171,12 @@ async def index():
             new bootstrap.Modal(document.getElementById('addModal')).show();
         }}
         
-        function editPrompt(id, key, description, promptText) {{
+        function editFromData(button) {{
+            const id = button.dataset.id;
+            const key = button.dataset.key;
+            const description = button.dataset.desc;
+            const promptText = button.dataset.prompt;
+            
             document.getElementById('editKey').value = key;
             document.getElementById('editDescription').value = description;
             document.getElementById('editPromptText').value = promptText;
