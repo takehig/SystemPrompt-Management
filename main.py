@@ -35,7 +35,7 @@ async def index():
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
             <style>
                 .prompt-preview {{
-                    max-width: 500px;
+                    width: 100%;
                     font-family: monospace;
                     font-size: 12px;
                     background-color: #f8f9fa;
@@ -44,13 +44,14 @@ async def index():
                     border-left: 3px solid #007bff;
                     cursor: pointer;
                     transition: all 0.3s ease;
+                    word-wrap: break-word;
                 }}
                 .prompt-preview:hover {{
                     background-color: #e9ecef;
                 }}
                 .prompt-full {{
                     display: none;
-                    max-width: 700px;
+                    width: 100%;
                     font-family: monospace;
                     font-size: 11px;
                     background-color: #1e1e1e;
