@@ -33,6 +33,43 @@ async def index():
             <title>SystemPrompt Management v2.0.0</title>
             <meta charset="UTF-8">
             <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+            <style>
+                .prompt-preview {{
+                    max-width: 400px;
+                    font-family: monospace;
+                    font-size: 12px;
+                    background-color: #f8f9fa;
+                    padding: 8px;
+                    border-radius: 4px;
+                    border-left: 3px solid #007bff;
+                    cursor: pointer;
+                    transition: all 0.3s ease;
+                }}
+                .prompt-preview:hover {{
+                    background-color: #e9ecef;
+                }}
+                .prompt-full {{
+                    display: none;
+                    max-width: 600px;
+                    font-family: monospace;
+                    font-size: 11px;
+                    background-color: #1e1e1e;
+                    color: #ffffff;
+                    padding: 12px;
+                    border-radius: 4px;
+                    margin-top: 8px;
+                    white-space: pre-wrap;
+                    word-wrap: break-word;
+                }}
+                .expand-btn {{
+                    font-size: 10px;
+                    color: #007bff;
+                    text-decoration: none;
+                }}
+                .expand-btn:hover {{
+                    text-decoration: underline;
+                }}
+            </style>
         </head>
         <body>
             <div class="container mt-4">
@@ -47,7 +84,8 @@ async def index():
                                 <thead>
                                     <tr>
                                         <th>Prompt Key</th>
-                                        <th>Text Length</th>
+                                        <th>Content Preview</th>
+                                        <th>Length</th>
                                         <th>Updated</th>
                                         <th>Actions</th>
                                     </tr>
@@ -75,17 +113,55 @@ async def index():
                     </div>
                 </div>
             </div>
+            
+            <script>
+                function togglePrompt(id) {{
+                    const preview = document.getElementById('preview-' + id);
+                    const full = document.getElementById('full-' + id);
+                    const btn = document.getElementById('btn-' + id);
+                    
+                    if (full.style.display === 'none') {{
+                        full.style.display = 'block';
+                        preview.style.display = 'none';
+                        btn.textContent = '▲ 折りたたむ';
+                    }} else {{
+                        full.style.display = 'none';
+                        preview.style.display = 'block';
+                        btn.textContent = '▼ 全文表示';
+                    }}
+                }}
+            </script>
         </body>
         </html>
         """
         
         rows = ""
-        for prompt in prompts:
+        for i, prompt in enumerate(prompts):
             updated_str = prompt['updated_at'].strftime('%Y-%m-%d %H:%M') if prompt['updated_at'] else 'N/A'
+            
+            # プレビュー用テキスト（最初の80文字）
+            preview_text = prompt['prompt_text'][:80]
+            if len(prompt['prompt_text']) > 80:
+                preview_text += "..."
+            
+            # 全文テキスト
+            full_text = html.escape(prompt['prompt_text'])
+            
             rows += f"""
                 <tr>
                     <td><code>{html.escape(prompt['prompt_key'])}</code></td>
-                    <td>{len(prompt['prompt_text'])}</td>
+                    <td>
+                        <div id="preview-{i}" class="prompt-preview" onclick="togglePrompt({i})">
+                            {html.escape(preview_text)}
+                        </div>
+                        <div id="full-{i}" class="prompt-full">
+                            {full_text}
+                        </div>
+                        <a href="#" id="btn-{i}" class="expand-btn" onclick="togglePrompt({i}); return false;">
+                            ▼ 全文表示
+                        </a>
+                    </td>
+                    <td><span class="badge bg-info">{len(prompt['prompt_text'])}</span></td>
                     <td>{updated_str}</td>
                     <td>
                         <a href="/edit/{html.escape(prompt['prompt_key'])}" class="btn btn-sm btn-outline-primary">Edit</a>
