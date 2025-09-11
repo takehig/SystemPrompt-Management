@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 import uvicorn
 from datetime import datetime
 import html
+import os
 
 from config import SERVER_CONFIG
 from utils.database import (
@@ -16,8 +17,9 @@ from utils.database import (
 
 app = FastAPI(title=SERVER_CONFIG["title"], version=SERVER_CONFIG["version"])
 
-# 静的ファイル配信
-app.mount("/static", StaticFiles(directory="static"), name="static")
+# 静的ファイル配信（存在時のみ）
+if os.path.exists("static"):
+    app.mount("/static", StaticFiles(directory="static"), name="static")
 
 @app.get("/", response_class=HTMLResponse)
 async def index():
