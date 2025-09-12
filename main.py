@@ -249,6 +249,34 @@ async def delete_prompt(prompt_key: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+# API エンドポイント
+@app.get("/api/prompt/{prompt_key}")
+async def get_prompt_api(prompt_key: str):
+    """プロンプト取得API（単数形）"""
+    try:
+        prompt = await get_system_prompt_by_key(prompt_key)
+        return {
+            "prompt_key": prompt_key,
+            "prompt_text": prompt["prompt_text"]
+        }
+    except Exception as e:
+        raise HTTPException(status_code=404, detail="Prompt not found")
+
+@app.get("/api/prompts/{prompt_key}")
+async def get_prompt_api_plural(prompt_key: str):
+    """プロンプト取得API（複数形・ProductMaster-MCP互換）"""
+    return await get_prompt_api(prompt_key)
+
+@app.get("/api/status")
+async def api_status():
+    """サービス状態確認API"""
+    return {
+        "status": "running",
+        "service": "SystemPrompt Management",
+        "version": SERVER_CONFIG["version"],
+        "database": "PostgreSQL"
+    }
+
 @app.get("/health")
 async def health():
     return {"status": "healthy", "service": "SystemPrompt-Management", "version": SERVER_CONFIG["version"]}
