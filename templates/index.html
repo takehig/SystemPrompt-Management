@@ -28,9 +28,18 @@
             margin-bottom: 2px;
         }
         .prompt-full {
-            display: none;
+            display: none !important;
             max-height: 300px;
             overflow-y: auto;
+            width: 100%;
+            font-family: monospace;
+            font-size: 12px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            padding: 8px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
         }
     </style>
 </head>
@@ -225,14 +234,14 @@
             const full = document.getElementById('full-' + id);
             const btnText = document.getElementById('btn-text-' + id);
             
-            if (preview.style.display === 'none') {
-                preview.style.display = 'block';
-                full.style.display = 'none';
-                btnText.textContent = '全文表示';
-            } else {
+            if (full.style.display === 'none' || full.style.display === '') {
                 preview.style.display = 'none';
                 full.style.display = 'block';
                 btnText.textContent = '省略表示';
+            } else {
+                preview.style.display = 'block';
+                full.style.display = 'none';
+                btnText.textContent = '全文表示';
             }
         }
     </script>
