@@ -12,6 +12,6 @@ DB_CONFIG = {
 # サーバー設定
 SERVER_CONFIG = {
     "title": "SystemPrompt Management",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "port": 8007
 }
