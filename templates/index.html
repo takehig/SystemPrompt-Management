@@ -29,9 +29,9 @@
                 <div class="col-12">
                     <div class="d-flex justify-content-between align-items-center">
                         <h2><i class="fas fa-list me-2"></i>プロンプト一覧</h2>
-                        <a href="/new" class="btn btn-success">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newPromptModal">
                             <i class="fas fa-plus me-1"></i>新規作成
-                        </a>
+                        </button>
                     </div>
                 </div>
             </div>
@@ -126,6 +126,65 @@
         </div>
     </div>
 
+    <!-- 新規作成モーダル -->
+    <div class="modal fade" id="newPromptModal" tabindex="-1" aria-labelledby="newPromptModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="newPromptModalLabel">
+                        <i class="fas fa-plus me-2"></i>新規プロンプト作成
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form method="POST" action="/create">
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="prompt_key" class="form-label">
+                                プロンプトキー <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" id="prompt_key" name="prompt_key" 
+                                   required placeholder="例: strategy_planning">
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                英数字とアンダースコアのみ使用可能です。
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="description" class="form-label">説明</label>
+                            <input type="text" class="form-control" id="description" name="description" 
+                                   placeholder="プロンプトの説明を入力してください">
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                このプロンプトの用途や目的を記載してください。
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="prompt_text" class="form-label">
+                                システムプロンプト <span class="text-danger">*</span>
+                            </label>
+                            <textarea class="form-control" id="prompt_text" name="prompt_text" 
+                                      rows="30" required placeholder="システムプロンプトを入力してください..."></textarea>
+                            <div class="form-text">
+                                <i class="fas fa-info-circle me-1"></i>
+                                AIシステムに送信されるシステムプロンプトを入力してください。
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            <i class="fas fa-times me-1"></i>キャンセル
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i>作成
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function deletePrompt(id, key) {
@@ -136,7 +195,7 @@
     </script>
 
     <footer class="mt-5 text-center text-muted">
-        <small>SystemPrompt Management v1.0.0</small>
+        <small>SystemPrompt Management v2.0.0</small>
     </footer>
 </body>
 </html>
