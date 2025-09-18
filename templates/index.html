@@ -96,26 +96,26 @@
                             <tbody>
                                 {% for prompt in prompts %}
                                 <tr>
-                                    <td>{{ prompt['id'] }}</td>
-                                    <td><code>{{ prompt['prompt_key'] }}</code></td>
-                                    <td>{{ prompt['description'] or '' }}</td>
+                                    <td>{{ prompt.id }}</td>
+                                    <td><code>{{ prompt.prompt_key }}</code></td>
+                                    <td>{{ prompt.description or '' }}</td>
                                     <td>
-                                        <div class="prompt-preview" id="preview-{{ prompt['id'] }}">{{ prompt.prompt_text[:200] }}{% if prompt.prompt_text|length > 200 %}...{% endif %}</div>
-                                        <div class="prompt-full" id="full-{{ prompt['id'] }}">{{ prompt.prompt_text }}</div>
+                                        <div class="prompt-preview" id="preview-{{ prompt.id }}">{{ prompt.prompt_text[:200] }}{% if prompt.prompt_text|length > 200 %}...{% endif %}</div>
+                                        <div class="prompt-full" id="full-{{ prompt.id }}">{{ prompt.prompt_text }}</div>
                                         {% if prompt.prompt_text|length > 200 %}
-                                        <button type="button" class="btn btn-sm btn-outline-info mt-1" onclick="togglePrompt({{ prompt['id'] }})">
-                                            <i class="fas fa-expand-alt me-1"></i><span id="btn-text-{{ prompt['id'] }}">全文表示</span>
+                                        <button type="button" class="btn btn-sm btn-outline-info mt-1" onclick="togglePrompt({{ prompt.id }})">
+                                            <i class="fas fa-expand-alt me-1"></i><span id="btn-text-{{ prompt.id }}">全文表示</span>
                                         </button>
                                         {% endif %}
                                     </td>
-                                    <td><small>{{ prompt['updated_at'].strftime('%Y-%m-%d %H:%M') if prompt['updated_at'] else 'N/A' }}</small></td>
+                                    <td><small>{{ prompt.updated_at.strftime('%Y-%m-%d %H:%M') if prompt.updated_at else 'N/A' }}</small></td>
                                     <td>
                                         <div class="btn-group-vertical" role="group">
-                                            <a href="/edit/{{ prompt['prompt_key'] }}" class="btn btn-sm btn-outline-primary">
+                                            <a href="/edit/{{ prompt.prompt_key }}" class="btn btn-sm btn-outline-primary">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <button type="button" class="btn btn-sm btn-outline-danger" 
-                                                    onclick="deletePrompt({{ prompt['id'] }}, '{{ prompt['prompt_key'] }}')">
+                                                    onclick="deletePrompt({{ prompt.id }}, '{{ prompt.prompt_key }}')">
                                                 <i class="fas fa-trash"></i>
                                             </button>
                                         </div>
