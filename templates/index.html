@@ -234,14 +234,16 @@
             const full = document.getElementById('full-' + id);
             const btnText = document.getElementById('btn-text-' + id);
             
-            if (full.style.display === 'none' || full.style.display === '') {
-                preview.style.display = 'none';
-                full.style.display = 'block';
-                btnText.textContent = '省略表示';
-            } else {
+            if (full.style.display === 'block') {
+                // 全文表示中 → 省略表示に切り替え
                 preview.style.display = 'block';
                 full.style.display = 'none';
                 btnText.textContent = '全文表示';
+            } else {
+                // 省略表示中 → 全文表示に切り替え
+                preview.style.display = 'none';
+                full.style.display = 'block';
+                btnText.textContent = '省略表示';
             }
         }
     </script>
