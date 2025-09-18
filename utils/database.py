@@ -23,7 +23,12 @@ async def get_all_system_prompts():
         cursor = connection.cursor(cursor_factory=RealDictCursor)
         
         cursor.execute("""
-            SELECT id, prompt_key, description, prompt_text, created_at, updated_at 
+            SELECT ROW_NUMBER() OVER (ORDER BY prompt_key) as id, 
+                   prompt_key, 
+                   '' as description, 
+                   prompt_text, 
+                   created_at, 
+                   updated_at 
             FROM system_prompts 
             ORDER BY prompt_key
         """)
