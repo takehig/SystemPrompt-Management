@@ -76,7 +76,6 @@ async def create_prompt_post(
 async def update_prompt_post(
     prompt_key: str,
     new_prompt_key: str = Form(..., alias="prompt_key"),
-    description: str = Form(""),
     prompt_text: str = Form(...)
 ):
     try:
@@ -84,10 +83,10 @@ async def update_prompt_post(
         if prompt_key != new_prompt_key:
             # 古いキーを削除して新しいキーで作成
             await delete_system_prompt_by_key(prompt_key)
-            await create_system_prompt(new_prompt_key, description, prompt_text)
+            await create_system_prompt(new_prompt_key, prompt_text)
         else:
             # 同じキーの場合は通常の更新
-            await update_system_prompt(prompt_key, description, prompt_text)
+            await update_system_prompt(prompt_key, prompt_text)
         return RedirectResponse(url="/", status_code=303)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

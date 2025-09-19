@@ -64,7 +64,7 @@ async def get_system_prompt_by_key(prompt_key: str):
         logger.error(f"Failed to get system prompt {prompt_key}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
 
-async def update_system_prompt(prompt_key: str, description: str, prompt_text: str):
+async def update_system_prompt(prompt_key: str, prompt_text: str):
     """システムプロンプト更新"""
     try:
         connection = get_db_connection()
@@ -86,7 +86,7 @@ async def update_system_prompt(prompt_key: str, description: str, prompt_text: s
         logger.error(f"Failed to update system prompt {prompt_key}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
 
-async def create_system_prompt(prompt_key: str, description: str, prompt_text: str):
+async def create_system_prompt(prompt_key: str, prompt_text: str):
     """新規システムプロンプト作成"""
     try:
         connection = get_db_connection()

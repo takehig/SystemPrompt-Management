@@ -40,49 +40,13 @@
                     <div class="card">
                         <div class="card-body">
                             <form method="post" action="/update/{{ prompt.prompt_key }}">
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="prompt_key" class="form-label">プロンプトキー <span class="text-danger">*</span></label>
-                                            <input type="text" class="form-control" id="prompt_key" name="prompt_key" 
-                                                   value="{{ prompt.prompt_key }}" required placeholder="例: strategy_planning">
-                                            <div class="form-text">
-                                                <i class="fas fa-info-circle me-1"></i>
-                                                システム内でプロンプトを識別するためのユニークなキー
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="description" class="form-label">説明</label>
-                                            <input type="text" class="form-control" id="description" name="description" 
-                                                   value="{{ prompt.description or '' }}" placeholder="プロンプトの説明">
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label for="category" class="form-label">カテゴリ</label>
-                                            <select class="form-select" id="category" name="category">
-                                                <option value="general" {% if prompt.category == 'general' %}selected{% endif %}>general</option>
-                                                <option value="strategy" {% if prompt.category == 'strategy' %}selected{% endif %}>strategy</option>
-                                                <option value="integration" {% if prompt.category == 'integration' %}selected{% endif %}>integration</option>
-                                                <option value="chat" {% if prompt.category == 'chat' %}selected{% endif %}>chat</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <div class="mb-3">
-                                            <label class="form-label">状態</label>
-                                            <div class="form-check">
-                                                <input class="form-check-input" type="checkbox" id="is_active" name="is_active" 
-                                                       {% if prompt.is_active %}checked{% endif %}>
-                                                <label class="form-check-label" for="is_active">
-                                                    有効
-                                                </label>
-                                            </div>
-                                        </div>
+                                <div class="mb-3">
+                                    <label for="prompt_key" class="form-label">プロンプトキー <span class="text-danger">*</span></label>
+                                    <input type="text" class="form-control" id="prompt_key" name="prompt_key" 
+                                           value="{{ prompt.prompt_key }}" required placeholder="例: strategy_planning">
+                                    <div class="form-text">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        システム内でプロンプトを識別するためのユニークなキー
                                     </div>
                                 </div>
 
