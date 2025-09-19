@@ -43,12 +43,25 @@
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="mb-3">
+                                            <label for="prompt_key" class="form-label">プロンプトキー <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="prompt_key" name="prompt_key" 
+                                                   value="{{ prompt.prompt_key }}" required placeholder="例: strategy_planning">
+                                            <div class="form-text">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                システム内でプロンプトを識別するためのユニークなキー
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
                                             <label for="description" class="form-label">説明</label>
                                             <input type="text" class="form-control" id="description" name="description" 
                                                    value="{{ prompt.description or '' }}" placeholder="プロンプトの説明">
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
                                             <label for="category" class="form-label">カテゴリ</label>
                                             <select class="form-select" id="category" name="category">
@@ -59,7 +72,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-3">
+                                    <div class="col-md-6">
                                         <div class="mb-3">
                                             <label class="form-label">状態</label>
                                             <div class="form-check">

@@ -107,6 +107,30 @@ async def create_system_prompt(prompt_key: str, prompt_text: str):
         logger.error(f"Failed to create system prompt {prompt_key}: {e}")
         raise HTTPException(status_code=500, detail=f"Database error: {e}")
 
+async def delete_system_prompt_by_key(prompt_key: str):
+    """システムプロンプトをキーで削除"""
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        
+        cursor.execute(
+            "DELETE FROM system_prompts WHERE prompt_key = %s",
+            (prompt_key,)
+        )
+        
+        if cursor.rowcount == 0:
+            raise HTTPException(status_code=404, detail="Prompt not found")
+        
+        connection.commit()
+        cursor.close()
+        connection.close()
+        
+        logger.info(f"System prompt deleted: {prompt_key}")
+        
+    except Exception as e:
+        logger.error(f"Failed to delete system prompt {prompt_key}: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete system prompt: {e}")
+
 async def delete_system_prompt(prompt_key: str):
     """システムプロンプト削除"""
     try:

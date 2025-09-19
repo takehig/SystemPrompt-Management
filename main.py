@@ -13,7 +13,8 @@ from utils.database import (
     get_system_prompt_by_key, 
     update_system_prompt, 
     create_system_prompt, 
-    delete_system_prompt
+    delete_system_prompt,
+    delete_system_prompt_by_key
 )
 
 app = FastAPI(title=SERVER_CONFIG["title"], version=SERVER_CONFIG["version"])
@@ -74,11 +75,19 @@ async def create_prompt_post(
 @app.post("/update/{prompt_key}")
 async def update_prompt_post(
     prompt_key: str,
+    new_prompt_key: str = Form(..., alias="prompt_key"),
     description: str = Form(""),
     prompt_text: str = Form(...)
 ):
     try:
-        await update_system_prompt(prompt_key, description, prompt_text)
+        # prompt_keyが変更された場合は削除→作成、同じ場合は更新
+        if prompt_key != new_prompt_key:
+            # 古いキーを削除して新しいキーで作成
+            await delete_system_prompt_by_key(prompt_key)
+            await create_system_prompt(new_prompt_key, description, prompt_text)
+        else:
+            # 同じキーの場合は通常の更新
+            await update_system_prompt(prompt_key, description, prompt_text)
         return RedirectResponse(url="/", status_code=303)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
