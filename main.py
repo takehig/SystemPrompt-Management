@@ -120,10 +120,15 @@ async def get_system_prompt_api(prompt_key: str):
 @app.post("/delete/{prompt_id}")
 async def delete_prompt_post(prompt_id: int):
     try:
-        # IDからprompt_keyを取得
+        # IDからprompt_keyを取得（サブクエリ使用）
         connection = get_db_connection()
         cursor = connection.cursor()
-        cursor.execute("SELECT prompt_key FROM system_prompts WHERE ROW_NUMBER() OVER (ORDER BY prompt_key) = %s", (prompt_id,))
+        cursor.execute("""
+            SELECT prompt_key FROM (
+                SELECT prompt_key, ROW_NUMBER() OVER (ORDER BY prompt_key) as row_num 
+                FROM system_prompts
+            ) numbered WHERE row_num = %s
+        """, (prompt_id,))
         result = cursor.fetchone()
         cursor.close()
         connection.close()
