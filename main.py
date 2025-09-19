@@ -9,6 +9,7 @@ import os
 
 from config import SERVER_CONFIG
 from utils.database import (
+    get_db_connection,
     get_all_system_prompts, 
     get_system_prompt_by_key, 
     update_system_prompt, 
@@ -119,7 +120,18 @@ async def get_system_prompt_api(prompt_key: str):
 @app.post("/delete/{prompt_id}")
 async def delete_prompt_post(prompt_id: int):
     try:
-        await delete_system_prompt(prompt_id)
+        # IDからprompt_keyを取得
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        cursor.execute("SELECT prompt_key FROM system_prompts WHERE ROW_NUMBER() OVER (ORDER BY prompt_key) = %s", (prompt_id,))
+        result = cursor.fetchone()
+        cursor.close()
+        connection.close()
+        
+        if result:
+            prompt_key = result[0]
+            await delete_system_prompt(prompt_key)
+        
         return RedirectResponse(url="/", status_code=303)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
