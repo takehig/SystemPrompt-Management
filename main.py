@@ -14,7 +14,8 @@ from utils.database import (
     update_system_prompt, 
     create_system_prompt, 
     delete_system_prompt,
-    delete_system_prompt_by_key
+    delete_system_prompt_by_key,
+    check_prompt_key_exists
 )
 
 app = FastAPI(title=SERVER_CONFIG["title"], version=SERVER_CONFIG["version"])
@@ -63,11 +64,14 @@ async def new_prompt(request: Request):
 @app.post("/create")
 async def create_prompt_post(
     prompt_key: str = Form(...),
-    description: str = Form(""),
     prompt_text: str = Form(...)
 ):
     try:
-        await create_system_prompt(prompt_key, description, prompt_text)
+        # prompt_key重複チェック
+        if await check_prompt_key_exists(prompt_key):
+            raise HTTPException(status_code=400, detail=f"Prompt key '{prompt_key}' already exists")
+        
+        await create_system_prompt(prompt_key, prompt_text)
         return RedirectResponse(url="/", status_code=303)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
@@ -81,6 +85,10 @@ async def update_prompt_post(
     try:
         # prompt_keyが変更された場合は削除→作成、同じ場合は更新
         if prompt_key != new_prompt_key:
+            # 新しいキーの重複チェック
+            if await check_prompt_key_exists(new_prompt_key):
+                raise HTTPException(status_code=400, detail=f"Prompt key '{new_prompt_key}' already exists")
+            
             # 古いキーを削除して新しいキーで作成
             await delete_system_prompt_by_key(prompt_key)
             await create_system_prompt(new_prompt_key, prompt_text)

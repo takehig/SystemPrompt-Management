@@ -16,6 +16,27 @@ def get_db_connection():
         logger.error(f"Database connection failed: {e}")
         raise HTTPException(status_code=500, detail=f"Database connection failed: {e}")
 
+async def check_prompt_key_exists(prompt_key: str) -> bool:
+    """prompt_keyの存在チェック"""
+    try:
+        connection = get_db_connection()
+        cursor = connection.cursor()
+        
+        cursor.execute(
+            "SELECT COUNT(*) FROM system_prompts WHERE prompt_key = %s",
+            (prompt_key,)
+        )
+        
+        count = cursor.fetchone()[0]
+        cursor.close()
+        connection.close()
+        
+        return count > 0
+        
+    except Exception as e:
+        logger.error(f"Failed to check prompt key existence {prompt_key}: {e}")
+        raise HTTPException(status_code=500, detail=f"Database error: {e}")
+
 async def get_all_system_prompts():
     """全システムプロンプト取得"""
     try:
