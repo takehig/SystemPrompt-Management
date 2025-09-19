@@ -99,6 +99,23 @@ async def update_prompt_post(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
+@app.get("/api/system-prompts/{prompt_key}")
+async def get_system_prompt_api(prompt_key: str):
+    """システムプロンプトAPI取得"""
+    try:
+        prompt = await get_system_prompt_by_key(prompt_key)
+        if prompt:
+            return {
+                "prompt_key": prompt["prompt_key"],
+                "prompt_text": prompt["prompt_text"],
+                "created_at": prompt["created_at"],
+                "updated_at": prompt["updated_at"]
+            }
+        else:
+            raise HTTPException(status_code=404, detail="Prompt not found")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 @app.post("/delete/{prompt_id}")
 async def delete_prompt_post(prompt_id: int):
     try:
